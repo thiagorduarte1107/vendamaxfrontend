@@ -1,20 +1,10 @@
 {
-  "version": 2,
-  "name": "vendamax",
-  "builds": [
+  "buildCommand": "npm run build",
+  "outputDirectory": "dist/anota-ai-angular/browser",
+  "rewrites": [
     {
-      "src": "package.json",
-      "use": "@vercel/static-build",
-      "config": {
-        "distDir": "dist/anota-ai-angular/browser"
-      }
+      "source": "/(.*)",
+      "destination": "/index.html"
     }
-  ],
-  "routes": [
-    {
-      "src": "/(.*)",
-      "dest": "/index.html"
-    }
-  ],
-  "buildCommand": "npm run build -- --configuration production"
+  ]
 }
