@@ -1,0 +1,215 @@
+<div class="sales-report-container">
+  <!-- Header -->
+  <div class="header">
+    <h1>Relatório de Vendas</h1>
+    <p class="subtitle">Visualize e analise suas vendas</p>
+  </div>
+
+  <!-- Filtros -->
+  <mat-card class="filters-card">
+    <mat-card-header>
+      <mat-card-title>
+        <mat-icon>filter_list</mat-icon>
+        Filtros
+      </mat-card-title>
+    </mat-card-header>
+    <mat-card-content>
+      <div class="filters-grid">
+        <!-- Período -->
+        <mat-form-field appearance="outline">
+          <mat-label>Data Início</mat-label>
+          <mat-icon matPrefix>event</mat-icon>
+          <input matInput [matDatepicker]="pickerStart" [(ngModel)]="startDate" (dateChange)="applyFilters()">
+          <mat-datepicker-toggle matSuffix [for]="pickerStart"></mat-datepicker-toggle>
+          <mat-datepicker #pickerStart></mat-datepicker>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline">
+          <mat-label>Data Fim</mat-label>
+          <mat-icon matPrefix>event</mat-icon>
+          <input matInput [matDatepicker]="pickerEnd" [(ngModel)]="endDate" (dateChange)="applyFilters()">
+          <mat-datepicker-toggle matSuffix [for]="pickerEnd"></mat-datepicker-toggle>
+          <mat-datepicker #pickerEnd></mat-datepicker>
+        </mat-form-field>
+
+        <!-- Forma de Pagamento -->
+        <mat-form-field appearance="outline">
+          <mat-label>Forma de Pagamento</mat-label>
+          <mat-icon matPrefix>payment</mat-icon>
+          <mat-select [(ngModel)]="paymentFilter" (selectionChange)="applyFilters()">
+            <mat-option value="all">Todas</mat-option>
+            <mat-option value="money">Dinheiro</mat-option>
+            <mat-option value="debit">Cartão de Débito</mat-option>
+            <mat-option value="credit">Cartão de Crédito</mat-option>
+            <mat-option value="pix">PIX</mat-option>
+          </mat-select>
+        </mat-form-field>
+
+        <!-- Status -->
+        <mat-form-field appearance="outline">
+          <mat-label>Status</mat-label>
+          <mat-icon matPrefix>check_circle</mat-icon>
+          <mat-select [(ngModel)]="statusFilter" (selectionChange)="applyFilters()">
+            <mat-option value="all">Todos</mat-option>
+            <mat-option value="completed">Concluída</mat-option>
+            <mat-option value="pending">Pendente</mat-option>
+            <mat-option value="cancelled">Cancelada</mat-option>
+          </mat-select>
+        </mat-form-field>
+      </div>
+
+      <div class="filter-actions">
+        <button mat-raised-button (click)="clearFilters()">
+          <mat-icon>clear</mat-icon>
+          Limpar Filtros
+        </button>
+        <button mat-raised-button color="primary" (click)="exportReport()">
+          <mat-icon>download</mat-icon>
+          Exportar
+        </button>
+      </div>
+    </mat-card-content>
+  </mat-card>
+
+  <!-- Estatísticas -->
+  <div class="stats-grid">
+    <mat-card class="stat-card">
+      <mat-card-content>
+        <div class="stat-icon">
+          <mat-icon>attach_money</mat-icon>
+        </div>
+        <div class="stat-info">
+          <span class="stat-label">Total de Vendas</span>
+          <span class="stat-value">R$ {{ totalSales.toFixed(2) }}</span>
+        </div>
+      </mat-card-content>
+    </mat-card>
+
+    <mat-card class="stat-card">
+      <mat-card-content>
+        <div class="stat-icon">
+          <mat-icon>shopping_cart</mat-icon>
+        </div>
+        <div class="stat-info">
+          <span class="stat-label">Quantidade de Vendas</span>
+          <span class="stat-value">{{ filteredSales.length }}</span>
+        </div>
+      </mat-card-content>
+    </mat-card>
+
+    <mat-card class="stat-card">
+      <mat-card-content>
+        <div class="stat-icon">
+          <mat-icon>inventory</mat-icon>
+        </div>
+        <div class="stat-info">
+          <span class="stat-label">Itens Vendidos</span>
+          <span class="stat-value">{{ totalItems }}</span>
+        </div>
+      </mat-card-content>
+    </mat-card>
+
+    <mat-card class="stat-card">
+      <mat-card-content>
+        <div class="stat-icon">
+          <mat-icon>trending_up</mat-icon>
+        </div>
+        <div class="stat-info">
+          <span class="stat-label">Ticket Médio</span>
+          <span class="stat-value">R$ {{ averageTicket.toFixed(2) }}</span>
+        </div>
+      </mat-card-content>
+    </mat-card>
+  </div>
+
+  <!-- Tabela de Vendas -->
+  <mat-card class="table-card">
+    <mat-card-header>
+      <mat-card-title>
+        <mat-icon>receipt_long</mat-icon>
+        Vendas Realizadas
+      </mat-card-title>
+    </mat-card-header>
+    <mat-card-content>
+      @if (filteredSales.length === 0) {
+        <div class="no-data">
+          <mat-icon>inbox</mat-icon>
+          <p>Nenhuma venda encontrada</p>
+          <span>Ajuste os filtros para visualizar vendas</span>
+        </div>
+      } @else {
+        <div class="table-container">
+          <table mat-table [dataSource]="filteredSales" class="sales-table">
+            <!-- ID -->
+            <ng-container matColumnDef="id">
+              <th mat-header-cell *matHeaderCellDef>#</th>
+              <td mat-cell *matCellDef="let sale">{{ sale.id }}</td>
+            </ng-container>
+
+            <!-- Data -->
+            <ng-container matColumnDef="date">
+              <th mat-header-cell *matHeaderCellDef>Data</th>
+              <td mat-cell *matCellDef="let sale">{{ sale.date | date: 'dd/MM/yyyy' }}</td>
+            </ng-container>
+
+            <!-- Cliente -->
+            <ng-container matColumnDef="client">
+              <th mat-header-cell *matHeaderCellDef>Cliente</th>
+              <td mat-cell *matCellDef="let sale">{{ sale.client }}</td>
+            </ng-container>
+
+            <!-- Itens -->
+            <ng-container matColumnDef="items">
+              <th mat-header-cell *matHeaderCellDef>Itens</th>
+              <td mat-cell *matCellDef="let sale">{{ sale.items }}</td>
+            </ng-container>
+
+            <!-- Total -->
+            <ng-container matColumnDef="total">
+              <th mat-header-cell *matHeaderCellDef>Total</th>
+              <td mat-cell *matCellDef="let sale" class="total-cell">
+                R$ {{ sale.total.toFixed(2) }}
+              </td>
+            </ng-container>
+
+            <!-- Pagamento -->
+            <ng-container matColumnDef="paymentMethod">
+              <th mat-header-cell *matHeaderCellDef>Pagamento</th>
+              <td mat-cell *matCellDef="let sale">
+                <mat-chip class="payment-chip">
+                  {{ getPaymentMethodLabel(sale.paymentMethod) }}
+                </mat-chip>
+              </td>
+            </ng-container>
+
+            <!-- Status -->
+            <ng-container matColumnDef="status">
+              <th mat-header-cell *matHeaderCellDef>Status</th>
+              <td mat-cell *matCellDef="let sale">
+                <mat-chip 
+                  [class.status-completed]="sale.status === 'completed'"
+                  [class.status-pending]="sale.status === 'pending'"
+                  [class.status-cancelled]="sale.status === 'cancelled'">
+                  {{ getStatusLabel(sale.status) }}
+                </mat-chip>
+              </td>
+            </ng-container>
+
+            <!-- Ações -->
+            <ng-container matColumnDef="actions">
+              <th mat-header-cell *matHeaderCellDef>Ações</th>
+              <td mat-cell *matCellDef="let sale">
+                <button mat-icon-button (click)="viewSaleDetails(sale)" matTooltip="Ver detalhes">
+                  <mat-icon>visibility</mat-icon>
+                </button>
+              </td>
+            </ng-container>
+
+            <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+            <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+          </table>
+        </div>
+      }
+    </mat-card-content>
+  </mat-card>
+</div>

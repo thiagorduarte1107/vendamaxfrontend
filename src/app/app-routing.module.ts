@@ -9,6 +9,9 @@ import { SalesComponent } from './components/sales/sales.component';
 import { CategoriesComponent } from './components/categories/categories.component';
 import { AccountsReceivableComponent } from './components/accounts-receivable/accounts-receivable.component';
 import { AccountsPayableComponent } from './components/accounts-payable/accounts-payable.component';
+import { PdvComponent } from './components/pdv/pdv.component';
+import { SalesReportComponent } from './components/sales-report/sales-report.component';
+import { StockControlComponent } from './components/stock-control/stock-control.component';
 import { AuthGuard } from './guards/auth.guard';
 
 const routes: Routes = [
@@ -20,9 +23,12 @@ const routes: Routes = [
     children: [
       { path: '', redirectTo: 'dashboard', pathMatch: 'full' },
       { path: 'dashboard', component: DashboardComponent },
+      { path: 'pdv', component: PdvComponent },
       { path: 'products', component: ProductsComponent },
+      { path: 'stock-control', component: StockControlComponent },
       { path: 'clients', component: ClientsComponent },
       { path: 'sales', component: SalesComponent },
+      { path: 'sales-report', component: SalesReportComponent },
       { path: 'categories', component: CategoriesComponent },
       { path: 'accounts-receivable', component: AccountsReceivableComponent },
       { path: 'accounts-payable', component: AccountsPayableComponent }
