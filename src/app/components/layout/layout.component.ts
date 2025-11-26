@@ -23,22 +23,60 @@ export class LayoutComponent implements OnInit {
 
   notifications: Notification[] = [];
   unreadCount = 0;
+  expandedSections: { [key: string]: boolean } = {
+    'Principal': true,
+    'Vendas': true,
+    'Estoque': false,
+    'Financeiro': false,
+    'Cadastros': false,
+    'Sistema': false
+  };
 
-  menuItems = [
-    { icon: 'dashboard', label: 'Dashboard', route: '/dashboard' },
-    { icon: 'storefront', label: 'Catálogo', route: '/catalog' },
-    { icon: 'receipt_long', label: 'Comandas', route: '/comandas' },
-    { icon: 'point_of_sale', label: 'PDV', route: '/pdv' },
-    { icon: 'inventory_2', label: 'Produtos', route: '/products' },
-    { icon: 'warehouse', label: 'Controle de Estoque', route: '/stock-control' },
-    { icon: 'people', label: 'Clientes', route: '/clients' },
-    { icon: 'shopping_cart', label: 'Vendas', route: '/sales' },
-    { icon: 'assessment', label: 'Relatório de Vendas', route: '/sales-report' },
-    { icon: 'category', label: 'Categorias', route: '/categories' },
-    { icon: 'account_balance_wallet', label: 'Contas a Receber', route: '/accounts-receivable' },
-    { icon: 'receipt', label: 'Contas a Pagar', route: '/accounts-payable' },
-    { icon: 'manage_accounts', label: 'Usuários', route: '/user-management' },
-    { icon: 'settings', label: 'Configurações', route: '/settings' }
+  menuSections = [
+    {
+      title: 'Principal',
+      items: [
+        { icon: 'dashboard', label: 'Dashboard', route: '/dashboard' }
+      ]
+    },
+    {
+      title: 'Vendas',
+      items: [
+        { icon: 'point_of_sale', label: 'PDV', route: '/pdv' },
+        { icon: 'storefront', label: 'Catálogo', route: '/catalog' },
+        { icon: 'receipt_long', label: 'Comandas', route: '/comandas' },
+        { icon: 'shopping_cart', label: 'Vendas', route: '/sales' },
+        { icon: 'assessment', label: 'Relatórios', route: '/sales-report' }
+      ]
+    },
+    {
+      title: 'Estoque',
+      items: [
+        { icon: 'inventory_2', label: 'Produtos', route: '/products' },
+        { icon: 'warehouse', label: 'Controle de Estoque', route: '/stock-control' },
+        { icon: 'category', label: 'Categorias', route: '/categories' }
+      ]
+    },
+    {
+      title: 'Financeiro',
+      items: [
+        { icon: 'account_balance_wallet', label: 'Contas a Receber', route: '/accounts-receivable' },
+        { icon: 'receipt', label: 'Contas a Pagar', route: '/accounts-payable' }
+      ]
+    },
+    {
+      title: 'Cadastros',
+      items: [
+        { icon: 'people', label: 'Clientes', route: '/clients' },
+        { icon: 'manage_accounts', label: 'Usuários', route: '/user-management' }
+      ]
+    },
+    {
+      title: 'Sistema',
+      items: [
+        { icon: 'settings', label: 'Configurações', route: '/settings' }
+      ]
+    }
   ];
 
   constructor(
@@ -101,9 +139,23 @@ export class LayoutComponent implements OnInit {
     return (names[0].charAt(0) + names[names.length - 1].charAt(0)).toUpperCase();
   }
 
+  toggleSection(sectionTitle: string): void {
+    this.expandedSections[sectionTitle] = !this.expandedSections[sectionTitle];
+  }
+
+  isSectionExpanded(sectionTitle: string): boolean {
+    return this.expandedSections[sectionTitle] || false;
+  }
+
   getPageTitle(): string {
     const currentRoute = this.router.url;
-    const menuItem = this.menuItems.find(item => item.route === currentRoute);
+    let menuItem: any = null;
+    
+    for (const section of this.menuSections) {
+      menuItem = section.items.find((item: any) => item.route === currentRoute);
+      if (menuItem) break;
+    }
+    
     return menuItem ? menuItem.label : 'VendaMax';
   }
 

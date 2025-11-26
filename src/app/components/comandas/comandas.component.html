@@ -24,7 +24,7 @@
   <!-- Estatísticas -->
   <div class="stats-section">
     <mat-card class="stat-card open">
-      <mat-icon>receipt</mat-icon>
+      <mat-icon>description</mat-icon>
       <div class="stat-content">
         <span class="stat-value">{{ getTotalOpen() }}</span>
         <span class="stat-label">Comandas Abertas</span>
@@ -32,7 +32,7 @@
     </mat-card>
 
     <mat-card class="stat-card closed">
-      <mat-icon>check_circle</mat-icon>
+      <mat-icon>task_alt</mat-icon>
       <div class="stat-content">
         <span class="stat-value">{{ getTotalClosed() }}</span>
         <span class="stat-label">Comandas Fechadas</span>
@@ -40,7 +40,7 @@
     </mat-card>
 
     <mat-card class="stat-card value">
-      <mat-icon>attach_money</mat-icon>
+      <mat-icon>payments</mat-icon>
       <div class="stat-content">
         <span class="stat-value">R$ {{ getTotalValue().toFixed(2) }}</span>
         <span class="stat-label">Total em Aberto</span>

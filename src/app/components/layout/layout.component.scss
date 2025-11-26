@@ -71,26 +71,76 @@
   mat-nav-list {
     padding-top: 0.5rem;
 
-    a {
-      margin: 0.25rem 0.5rem;
-      border-radius: var(--radius);
-      transition: all 0.2s;
+    .menu-section {
+      margin-bottom: 0.5rem;
 
-      &:hover {
-        background-color: hsl(var(--accent));
-      }
+      .section-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 0.75rem 1rem;
+        cursor: pointer;
+        transition: all 0.2s;
+        border-radius: var(--radius);
+        margin: 0 0.5rem;
 
-      &.active {
-        background-color: hsl(var(--primary) / 0.1);
-        color: hsl(var(--primary));
+        &:hover {
+          background-color: hsl(var(--muted) / 0.3);
+        }
 
-        mat-icon {
-          color: hsl(var(--primary));
+        .section-title {
+          font-size: 0.75rem;
+          font-weight: 600;
+          text-transform: uppercase;
+          letter-spacing: 0.05em;
+          color: hsl(var(--foreground));
+          opacity: 0.8;
+        }
+
+        .expand-icon {
+          font-size: 20px;
+          width: 20px;
+          height: 20px;
+          color: hsl(var(--muted-foreground));
+          transition: transform 0.3s ease;
+
+          &.expanded {
+            transform: rotate(180deg);
+          }
         }
       }
 
-      mat-icon {
-        color: hsl(var(--muted-foreground));
+      .section-items {
+        max-height: 0;
+        overflow: hidden;
+        transition: max-height 0.3s ease;
+
+        &.expanded {
+          max-height: 500px;
+        }
+
+        a {
+          margin: 0.25rem 0.5rem;
+          border-radius: var(--radius);
+          transition: all 0.2s;
+
+          &:hover {
+            background-color: hsl(var(--accent));
+          }
+
+          &.active {
+            background-color: hsl(var(--primary) / 0.1);
+            color: hsl(var(--primary));
+
+            mat-icon {
+              color: hsl(var(--primary));
+            }
+          }
+
+          mat-icon {
+            color: hsl(var(--muted-foreground));
+          }
+        }
       }
     }
   }

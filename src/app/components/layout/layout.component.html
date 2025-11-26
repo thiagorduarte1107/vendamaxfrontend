@@ -20,10 +20,20 @@
     </div>
 
     <mat-nav-list>
-      <a mat-list-item *ngFor="let item of menuItems" [routerLink]="item.route" routerLinkActive="active" (click)="closeSidenavOnMobile()">
-        <mat-icon matListItemIcon>{{ item.icon }}</mat-icon>
-        <span matListItemTitle>{{ item.label }}</span>
-      </a>
+      <div *ngFor="let section of menuSections" class="menu-section">
+        <div class="section-header" (click)="toggleSection(section.title)">
+          <span class="section-title">{{ section.title }}</span>
+          <mat-icon class="expand-icon" [class.expanded]="isSectionExpanded(section.title)">
+            expand_more
+          </mat-icon>
+        </div>
+        <div class="section-items" [class.expanded]="isSectionExpanded(section.title)">
+          <a mat-list-item *ngFor="let item of section.items" [routerLink]="item.route" routerLinkActive="active" (click)="closeSidenavOnMobile()">
+            <mat-icon matListItemIcon>{{ item.icon }}</mat-icon>
+            <span matListItemTitle>{{ item.label }}</span>
+          </a>
+        </div>
+      </div>
     </mat-nav-list>
   </mat-sidenav>
 
