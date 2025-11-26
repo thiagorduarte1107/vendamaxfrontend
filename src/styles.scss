@@ -124,6 +124,36 @@
   box-sizing: border-box;
 }
 
+/* ==================== REMOVER OUTLINE AZUL DE FOCUS ==================== */
+*:focus,
+*:focus-visible,
+input:focus,
+textarea:focus,
+select:focus,
+button:focus,
+.mat-mdc-form-field:focus,
+.mat-mdc-input-element:focus,
+.mat-mdc-text-field-wrapper:focus,
+.mdc-text-field:focus {
+  outline: none !important;
+  box-shadow: none !important;
+}
+
+/* Remover outline do Material Angular */
+.mat-mdc-form-field-focus-overlay {
+  display: none !important;
+}
+
+.mat-mdc-text-field-wrapper.mdc-text-field--focused {
+  outline: none !important;
+}
+
+/* Manter apenas a borda do campo sem o outline azul */
+.mat-mdc-form-field.mat-focused .mat-mdc-text-field-wrapper {
+  border-color: hsl(var(--border-strong)) !important;
+  box-shadow: none !important;
+}
+
 html, body {
   height: 100%;
 }

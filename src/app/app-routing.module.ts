@@ -13,6 +13,9 @@ import { PdvComponent } from './components/pdv/pdv.component';
 import { SalesReportComponent } from './components/sales-report/sales-report.component';
 import { StockControlComponent } from './components/stock-control/stock-control.component';
 import { UserManagementComponent } from './components/user-management/user-management.component';
+import { ProductCatalogComponent } from './components/product-catalog/product-catalog.component';
+import { ComandasComponent } from './components/comandas/comandas.component';
+import { SettingsComponent } from './components/settings/settings.component';
 import { AuthGuard } from './guards/auth.guard';
 
 const routes: Routes = [
@@ -24,6 +27,8 @@ const routes: Routes = [
     children: [
       { path: '', redirectTo: 'dashboard', pathMatch: 'full' },
       { path: 'dashboard', component: DashboardComponent },
+      { path: 'catalog', component: ProductCatalogComponent },
+      { path: 'comandas', component: ComandasComponent },
       { path: 'pdv', component: PdvComponent },
       { path: 'products', component: ProductsComponent },
       { path: 'stock-control', component: StockControlComponent },
@@ -33,7 +38,8 @@ const routes: Routes = [
       { path: 'categories', component: CategoriesComponent },
       { path: 'accounts-receivable', component: AccountsReceivableComponent },
       { path: 'accounts-payable', component: AccountsPayableComponent },
-      { path: 'user-management', component: UserManagementComponent }
+      { path: 'user-management', component: UserManagementComponent },
+      { path: 'settings', component: SettingsComponent }
     ]
   },
   { path: '**', redirectTo: '' }

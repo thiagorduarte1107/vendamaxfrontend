@@ -83,7 +83,7 @@ import { Product, Category } from '../../models';
           <mat-form-field appearance="outline" class="full-width">
             <mat-label>Nome do Produto</mat-label>
             <input matInput formControlName="name" placeholder="Ex: Coca-Cola 2L">
-            <mat-icon matPrefix>inventory_2</mat-icon>
+
             <mat-error *ngIf="form.get('name')?.hasError('required')">
               Nome é obrigatório
             </mat-error>
@@ -96,7 +96,7 @@ import { Product, Category } from '../../models';
                 {{ category.name }}
               </mat-option>
             </mat-select>
-            <mat-icon matPrefix>category</mat-icon>
+
             <mat-error *ngIf="form.get('categoryId')?.hasError('required')">
               Categoria é obrigatória
             </mat-error>
@@ -124,7 +124,7 @@ import { Product, Category } from '../../models';
             <mat-form-field appearance="outline" class="half-width">
               <mat-label>Estoque Atual</mat-label>
               <input matInput type="number" formControlName="stock" placeholder="0">
-              <mat-icon matPrefix>inventory</mat-icon>
+
               <mat-error *ngIf="form.get('stock')?.hasError('required')">
                 Estoque é obrigatório
               </mat-error>
@@ -136,7 +136,7 @@ import { Product, Category } from '../../models';
             <mat-form-field appearance="outline" class="half-width">
               <mat-label>Estoque Mínimo</mat-label>
               <input matInput type="number" formControlName="minStock" placeholder="0">
-              <mat-icon matPrefix>warning</mat-icon>
+
               <mat-error *ngIf="form.get('minStock')?.hasError('min')">
                 Estoque mínimo não pode ser negativo
               </mat-error>

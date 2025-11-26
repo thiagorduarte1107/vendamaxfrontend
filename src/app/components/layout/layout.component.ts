@@ -26,6 +26,8 @@ export class LayoutComponent implements OnInit {
 
   menuItems = [
     { icon: 'dashboard', label: 'Dashboard', route: '/dashboard' },
+    { icon: 'storefront', label: 'Catálogo', route: '/catalog' },
+    { icon: 'receipt_long', label: 'Comandas', route: '/comandas' },
     { icon: 'point_of_sale', label: 'PDV', route: '/pdv' },
     { icon: 'inventory_2', label: 'Produtos', route: '/products' },
     { icon: 'warehouse', label: 'Controle de Estoque', route: '/stock-control' },
@@ -35,7 +37,8 @@ export class LayoutComponent implements OnInit {
     { icon: 'category', label: 'Categorias', route: '/categories' },
     { icon: 'account_balance_wallet', label: 'Contas a Receber', route: '/accounts-receivable' },
     { icon: 'receipt', label: 'Contas a Pagar', route: '/accounts-payable' },
-    { icon: 'manage_accounts', label: 'Usuários', route: '/user-management' }
+    { icon: 'manage_accounts', label: 'Usuários', route: '/user-management' },
+    { icon: 'settings', label: 'Configurações', route: '/settings' }
   ];
 
   constructor(

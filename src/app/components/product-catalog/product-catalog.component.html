@@ -1,0 +1,135 @@
+<div class="catalog-container">
+  <!-- Header -->
+  <div class="catalog-header">
+    <div class="header-content">
+      <h1>
+        <mat-icon>shopping_cart</mat-icon>
+        Catálogo de Produtos
+      </h1>
+      <p class="subtitle" *ngIf="!currentComandaId">Selecione os produtos e adicione ao carrinho</p>
+      <p class="subtitle comanda-mode" *ngIf="currentComandaId">
+        <mat-icon>receipt_long</mat-icon>
+        Modo Comanda - Adicionando itens
+      </p>
+    </div>
+    
+    <div class="header-buttons">
+      <button mat-raised-button color="accent" class="comanda-button" (click)="goToComanda()" *ngIf="currentComandaId">
+        <mat-icon [matBadge]="comandaItemsCount" matBadgeColor="warn">receipt_long</mat-icon>
+        Ver Comanda
+      </button>
+      
+      <button mat-raised-button color="primary" class="cart-button" (click)="goToPDV()" *ngIf="cartCount > 0 && !currentComandaId">
+        <mat-icon [matBadge]="cartCount" matBadgeColor="warn">shopping_cart</mat-icon>
+        Ir para o PDV
+      </button>
+    </div>
+  </div>
+
+  <!-- Filtros -->
+  <div class="filters-section">
+    <!-- Busca -->
+    <mat-form-field class="search-field" appearance="outline">
+      <mat-label>Buscar produtos</mat-label>
+      <input matInput [(ngModel)]="searchTerm" (ngModelChange)="onSearch()" placeholder="Nome, descrição ou código de barras">
+
+    </mat-form-field>
+
+    <!-- Categorias -->
+    <div class="categories-chips">
+      <mat-chip-listbox>
+        <mat-chip-option 
+          *ngFor="let category of categories"
+          [selected]="selectedCategory === category.name"
+          (click)="filterByCategory(category.name)">
+          {{ category.name }} ({{ category.count }})
+        </mat-chip-option>
+      </mat-chip-listbox>
+    </div>
+  </div>
+
+  <!-- Grid de Produtos -->
+  <div class="products-grid" *ngIf="filteredProducts.length > 0">
+    <mat-card *ngFor="let product of filteredProducts" class="product-card">
+      <!-- Imagem -->
+      <div class="product-image-container">
+        <img [src]="product.image" [alt]="product.name" class="product-image">
+        <div class="stock-badge" [ngClass]="getStockClass(product.stock)">
+          {{ getStockStatus(product.stock) }}
+        </div>
+      </div>
+
+      <!-- Conteúdo -->
+      <mat-card-content class="product-content">
+        <div class="product-category">
+          <mat-icon>category</mat-icon>
+          {{ product.category }}
+        </div>
+        
+        <h3 class="product-name">{{ product.name }}</h3>
+        <p class="product-description">{{ product.description }}</p>
+        
+        <div class="product-info">
+          <div class="info-item">
+            <mat-icon>qr_code</mat-icon>
+            <span>{{ product.barcode }}</span>
+          </div>
+          <div class="info-item">
+            <mat-icon>inventory</mat-icon>
+            <span>{{ product.stock }} un.</span>
+          </div>
+        </div>
+
+        <div class="product-price">
+          <span class="price-label">Preço:</span>
+          <span class="price-value">R$ {{ product.price.toFixed(2) }}</span>
+        </div>
+      </mat-card-content>
+
+      <!-- Ações -->
+      <mat-card-actions class="product-actions">
+        <button 
+          mat-raised-button 
+          color="primary" 
+          (click)="addToCart(product)"
+          [disabled]="product.stock === 0"
+          class="add-button">
+          <mat-icon>add_shopping_cart</mat-icon>
+          {{ product.stock === 0 ? 'Sem Estoque' : 'Adicionar ao Carrinho' }}
+        </button>
+      </mat-card-actions>
+    </mat-card>
+  </div>
+
+  <!-- Mensagem de nenhum produto encontrado -->
+  <div class="no-products" *ngIf="filteredProducts.length === 0">
+    <mat-icon>inventory_2</mat-icon>
+    <h2>Nenhum produto encontrado</h2>
+    <p>Tente ajustar os filtros ou a busca</p>
+  </div>
+
+  <!-- Botão flutuante para ir ao PDV ou Comanda -->
+  <button 
+    mat-fab 
+    color="accent" 
+    class="floating-cart-button" 
+    (click)="goToComanda()"
+    *ngIf="currentComandaId"
+    [matBadge]="comandaItemsCount"
+    matBadgeColor="warn"
+    matBadgeSize="large">
+    <mat-icon>receipt_long</mat-icon>
+  </button>
+
+  <button 
+    mat-fab 
+    color="primary" 
+    class="floating-cart-button" 
+    (click)="goToPDV()"
+    *ngIf="cartCount > 0 && !currentComandaId"
+    [matBadge]="cartCount"
+    matBadgeColor="warn"
+    matBadgeSize="large">
+    <mat-icon>shopping_cart</mat-icon>
+  </button>
+</div>

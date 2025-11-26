@@ -1,0 +1,178 @@
+<div class="comandas-container">
+  <!-- Header -->
+  <div class="comandas-header">
+    <div class="header-content">
+      <h1>
+        <mat-icon>receipt_long</mat-icon>
+        Comandas
+      </h1>
+      <p class="subtitle">Gerencie comandas e vendedores</p>
+    </div>
+    
+    <div class="header-actions">
+      <button mat-raised-button color="accent" (click)="manageSellers()">
+        <mat-icon>person</mat-icon>
+        Vendedores
+      </button>
+      <button mat-raised-button color="primary" (click)="newComanda()">
+        <mat-icon>add</mat-icon>
+        Nova Comanda
+      </button>
+    </div>
+  </div>
+
+  <!-- Estatísticas -->
+  <div class="stats-section">
+    <mat-card class="stat-card open">
+      <mat-icon>receipt</mat-icon>
+      <div class="stat-content">
+        <span class="stat-value">{{ getTotalOpen() }}</span>
+        <span class="stat-label">Comandas Abertas</span>
+      </div>
+    </mat-card>
+
+    <mat-card class="stat-card closed">
+      <mat-icon>check_circle</mat-icon>
+      <div class="stat-content">
+        <span class="stat-value">{{ getTotalClosed() }}</span>
+        <span class="stat-label">Comandas Fechadas</span>
+      </div>
+    </mat-card>
+
+    <mat-card class="stat-card value">
+      <mat-icon>attach_money</mat-icon>
+      <div class="stat-content">
+        <span class="stat-value">R$ {{ getTotalValue().toFixed(2) }}</span>
+        <span class="stat-label">Total em Aberto</span>
+      </div>
+    </mat-card>
+  </div>
+
+  <!-- Filtros -->
+  <div class="filters-section">
+    <mat-form-field class="search-field" appearance="outline">
+      <mat-label>Buscar</mat-label>
+      <input matInput [(ngModel)]="searchTerm" (ngModelChange)="onFilterChange()" placeholder="Número, cliente ou mesa">
+
+    </mat-form-field>
+
+    <mat-form-field appearance="outline">
+      <mat-label>Status</mat-label>
+      <mat-select [(ngModel)]="selectedStatus" (ngModelChange)="onFilterChange()">
+        <mat-option value="ALL">Todas</mat-option>
+        <mat-option value="OPEN">Abertas</mat-option>
+        <mat-option value="CLOSED">Fechadas</mat-option>
+      </mat-select>
+    </mat-form-field>
+
+    <mat-form-field appearance="outline">
+      <mat-label>Vendedor</mat-label>
+      <mat-select [(ngModel)]="selectedSeller" (ngModelChange)="onFilterChange()">
+        <mat-option [value]="null">Todos</mat-option>
+        <mat-option *ngFor="let seller of sellers" [value]="seller.id">
+          {{ seller.name }}
+        </mat-option>
+      </mat-select>
+    </mat-form-field>
+  </div>
+
+  <!-- Grid de Comandas -->
+  <div class="comandas-grid" *ngIf="filteredComandas.length > 0">
+    <mat-card *ngFor="let comanda of filteredComandas" class="comanda-card" [ngClass]="comanda.status.toLowerCase()">
+      <!-- Header da Comanda -->
+      <div class="comanda-header">
+        <div class="comanda-number">
+          <mat-icon>receipt_long</mat-icon>
+          <span>{{ comanda.number }}</span>
+        </div>
+        <mat-chip [color]="getStatusColor(comanda.status)" selected>
+          {{ getStatusLabel(comanda.status) }}
+        </mat-chip>
+      </div>
+
+      <!-- Informações -->
+      <mat-card-content class="comanda-content">
+        <div class="info-row">
+          <mat-icon>person</mat-icon>
+          <span class="label">Vendedor:</span>
+          <span class="value">{{ comanda.sellerName }}</span>
+        </div>
+
+        <div class="info-row" *ngIf="comanda.customerName">
+          <mat-icon>account_circle</mat-icon>
+          <span class="label">Cliente:</span>
+          <span class="value">{{ comanda.customerName }}</span>
+        </div>
+
+        <div class="info-row" *ngIf="comanda.table">
+          <mat-icon>table_restaurant</mat-icon>
+          <span class="label">Mesa:</span>
+          <span class="value">{{ comanda.table }}</span>
+        </div>
+
+        <div class="info-row">
+          <mat-icon>schedule</mat-icon>
+          <span class="label">Aberta:</span>
+          <span class="value">{{ comanda.openedAt | date:'dd/MM/yyyy HH:mm' }}</span>
+        </div>
+
+        <div class="info-row" *ngIf="comanda.closedAt">
+          <mat-icon>check_circle</mat-icon>
+          <span class="label">Fechada:</span>
+          <span class="value">{{ comanda.closedAt | date:'dd/MM/yyyy HH:mm' }}</span>
+        </div>
+
+        <div class="items-summary">
+          <mat-icon>shopping_basket</mat-icon>
+          <span>{{ comanda.items.length }} {{ comanda.items.length === 1 ? 'item' : 'itens' }}</span>
+        </div>
+
+        <div class="comanda-total">
+          <span class="label">Total:</span>
+          <span class="value">R$ {{ comanda.subtotal.toFixed(2) }}</span>
+        </div>
+      </mat-card-content>
+
+      <!-- Ações -->
+      <mat-card-actions class="comanda-actions">
+        <button 
+          mat-button 
+          color="primary" 
+          (click)="addItemToComanda(comanda)"
+          *ngIf="comanda.status === 'OPEN'">
+          <mat-icon>add_shopping_cart</mat-icon>
+          Adicionar Itens
+        </button>
+
+        <button 
+          mat-raised-button 
+          color="primary" 
+          (click)="closeComanda(comanda)"
+          *ngIf="comanda.status === 'OPEN'">
+          <mat-icon>payments</mat-icon>
+          Fechar Comanda
+        </button>
+
+        <button 
+          mat-button 
+          color="warn" 
+          (click)="deleteComanda(comanda)"
+          *ngIf="comanda.status === 'OPEN'">
+          <mat-icon>delete</mat-icon>
+          Excluir
+        </button>
+      </mat-card-actions>
+    </mat-card>
+  </div>
+
+  <!-- Mensagem de nenhuma comanda -->
+  <div class="no-comandas" *ngIf="filteredComandas.length === 0">
+    <mat-icon>receipt_long</mat-icon>
+    <h2>Nenhuma comanda encontrada</h2>
+    <p>Crie uma nova comanda para começar</p>
+    <button mat-raised-button color="primary" (click)="newComanda()">
+      <mat-icon>add</mat-icon>
+      Nova Comanda
+    </button>
+  </div>
+</div>

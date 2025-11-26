@@ -19,7 +19,7 @@ import { AccountPayable } from '../../models';
           <mat-form-field appearance="outline" class="full-width">
             <mat-label>Descrição</mat-label>
             <input matInput formControlName="description" placeholder="Ex: Aluguel, Fornecedor">
-            <mat-icon matPrefix>description</mat-icon>
+
             <mat-error *ngIf="form.get('description')?.hasError('required')">
               Descrição é obrigatória
             </mat-error>
@@ -28,7 +28,7 @@ import { AccountPayable } from '../../models';
           <mat-form-field appearance="outline" class="full-width">
             <mat-label>Fornecedor/Beneficiário</mat-label>
             <input matInput formControlName="supplier" placeholder="Nome do fornecedor">
-            <mat-icon matPrefix>business</mat-icon>
+
             <mat-error *ngIf="form.get('supplier')?.hasError('required')">
               Fornecedor é obrigatório
             </mat-error>
@@ -49,7 +49,7 @@ import { AccountPayable } from '../../models';
             <mat-form-field appearance="outline" class="half-width">
               <mat-label>Data de Vencimento</mat-label>
               <input matInput type="date" formControlName="dueDate">
-              <mat-icon matPrefix>event</mat-icon>
+
               <mat-error *ngIf="form.get('dueDate')?.hasError('required')">
                 Data é obrigatória
               </mat-error>
@@ -63,7 +63,7 @@ import { AccountPayable } from '../../models';
               <mat-option value="paid">Pago</mat-option>
               <mat-option value="overdue">Atrasado</mat-option>
             </mat-select>
-            <mat-icon matPrefix>info</mat-icon>
+
           </mat-form-field>
 
           <mat-form-field appearance="outline" class="full-width">

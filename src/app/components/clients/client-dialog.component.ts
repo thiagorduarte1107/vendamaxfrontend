@@ -19,7 +19,7 @@ import { Client } from '../../models';
           <mat-form-field appearance="outline" class="full-width">
             <mat-label>Nome Completo</mat-label>
             <input matInput formControlName="name" placeholder="Ex: João Silva">
-            <mat-icon matPrefix>person</mat-icon>
+
             <mat-error *ngIf="form.get('name')?.hasError('required')">
               Nome é obrigatório
             </mat-error>
@@ -28,7 +28,7 @@ import { Client } from '../../models';
           <mat-form-field appearance="outline" class="full-width">
             <mat-label>Email</mat-label>
             <input matInput type="email" formControlName="email" placeholder="joao@email.com">
-            <mat-icon matPrefix>email</mat-icon>
+
             <mat-error *ngIf="form.get('email')?.hasError('required')">
               Email é obrigatório
             </mat-error>
@@ -40,7 +40,7 @@ import { Client } from '../../models';
           <mat-form-field appearance="outline" class="full-width">
             <mat-label>Telefone</mat-label>
             <input matInput formControlName="phone" placeholder="(11) 99999-9999">
-            <mat-icon matPrefix>phone</mat-icon>
+
             <mat-error *ngIf="form.get('phone')?.hasError('required')">
               Telefone é obrigatório
             </mat-error>
@@ -65,7 +65,7 @@ import { Client } from '../../models';
           <mat-form-field appearance="outline" class="full-width">
             <mat-label>Endereço (opcional)</mat-label>
             <textarea matInput formControlName="address" rows="2" placeholder="Rua, número, bairro, cidade"></textarea>
-            <mat-icon matPrefix>location_on</mat-icon>
+
           </mat-form-field>
         </div>
 

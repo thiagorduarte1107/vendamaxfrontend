@@ -19,7 +19,7 @@ import { Category } from '../../models';
           <mat-form-field appearance="outline" class="full-width">
             <mat-label>Nome da Categoria</mat-label>
             <input matInput formControlName="name" placeholder="Ex: Bebidas">
-            <mat-icon matPrefix>category</mat-icon>
+
             <mat-error *ngIf="form.get('name')?.hasError('required')">
               Nome é obrigatório
             </mat-error>

@@ -225,6 +225,99 @@
         }
       }
     }
+
+    // Card da Logo do Lojista
+    .store-logo-card {
+      height: calc(100% - 90px);
+      display: flex;
+      flex-direction: column;
+
+      .logo-content {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        gap: 2rem;
+        padding: 2rem !important;
+
+        .logo-container {
+          flex: 1;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          background: linear-gradient(135deg, hsl(var(--primary) / 0.05) 0%, hsl(var(--primary) / 0.1) 100%);
+          border-radius: 12px;
+          border: 2px dashed hsl(var(--border));
+          min-height: 300px;
+
+          .logo-placeholder {
+            text-align: center;
+            color: hsl(var(--muted-foreground));
+
+            mat-icon {
+              font-size: 80px;
+              width: 80px;
+              height: 80px;
+              opacity: 0.3;
+              margin-bottom: 1rem;
+            }
+
+            p {
+              margin: 0.5rem 0;
+              font-size: 1.125rem;
+              font-weight: 500;
+              color: hsl(var(--foreground));
+            }
+
+            span {
+              font-size: 0.875rem;
+              opacity: 0.7;
+            }
+          }
+        }
+
+        .store-info {
+          text-align: center;
+          padding: 1.5rem;
+          background: hsl(var(--muted) / 0.1);
+          border-radius: 12px;
+
+          h2 {
+            margin: 0 0 0.5rem 0;
+            font-size: 1.75rem;
+            font-weight: 700;
+            color: hsl(var(--primary));
+          }
+
+          .store-tagline {
+            margin: 0 0 1.5rem 0;
+            font-size: 0.9rem;
+            color: hsl(var(--muted-foreground));
+          }
+
+          .store-details {
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
+
+            .detail-item {
+              display: flex;
+              align-items: center;
+              justify-content: center;
+              gap: 0.5rem;
+              font-size: 0.9rem;
+              color: hsl(var(--foreground));
+
+              mat-icon {
+                font-size: 20px;
+                width: 20px;
+                height: 20px;
+                color: hsl(var(--primary));
+              }
+            }
+          }
+        }
+      }
+    }
   }
 
   // Seção do Carrinho
@@ -596,6 +689,122 @@
 
       button {
         min-width: 100px;
+      }
+    }
+
+    &.comanda-modal {
+      max-width: 600px;
+
+      .modal-header {
+        h2 {
+          display: flex;
+          align-items: center;
+          gap: 0.5rem;
+
+          mat-icon {
+            color: hsl(var(--primary));
+          }
+        }
+      }
+
+      .comandas-list {
+        max-height: 500px;
+        overflow-y: auto;
+
+        .no-comandas-message {
+          text-align: center;
+          padding: 3rem 1rem;
+          color: hsl(var(--muted-foreground));
+
+          mat-icon {
+            font-size: 64px;
+            width: 64px;
+            height: 64px;
+            opacity: 0.3;
+            margin-bottom: 1rem;
+          }
+
+          p {
+            margin: 0;
+            font-size: 1rem;
+          }
+        }
+
+        .comanda-item {
+          margin-bottom: 1rem;
+          cursor: pointer;
+          transition: all 0.3s ease;
+          border-left: 4px solid hsl(var(--primary));
+
+          &:hover {
+            transform: translateX(4px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+          }
+
+          .comanda-header-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+            padding-bottom: 0.75rem;
+            border-bottom: 1px solid hsl(var(--border));
+
+            .comanda-number {
+              display: flex;
+              align-items: center;
+              gap: 0.5rem;
+              font-size: 1.125rem;
+
+              mat-icon {
+                color: hsl(var(--primary));
+              }
+            }
+          }
+
+          .comanda-details {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+            margin-bottom: 1rem;
+
+            .detail-row {
+              display: flex;
+              align-items: center;
+              gap: 0.5rem;
+              font-size: 0.875rem;
+              color: hsl(var(--muted-foreground));
+
+              mat-icon {
+                font-size: 18px;
+                width: 18px;
+                height: 18px;
+              }
+
+              strong {
+                color: hsl(var(--foreground));
+              }
+            }
+          }
+
+          .comanda-action {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+            padding: 0.75rem;
+            background: hsl(var(--primary) / 0.1);
+            border-radius: 6px;
+            color: hsl(var(--primary));
+            font-weight: 500;
+            font-size: 0.875rem;
+
+            mat-icon {
+              font-size: 20px;
+              width: 20px;
+              height: 20px;
+            }
+          }
+        }
       }
     }
   }

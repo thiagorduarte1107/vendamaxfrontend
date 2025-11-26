@@ -43,7 +43,7 @@ import { UserManagementService } from '../../services/user-management.service';
           <mat-form-field appearance="outline" class="full-width">
             <mat-label>Nome Completo</mat-label>
             <input matInput formControlName="name" placeholder="Ex: João Silva">
-            <mat-icon matPrefix>person</mat-icon>
+
             <mat-error *ngIf="form.get('name')?.hasError('required')">
               Nome é obrigatório
             </mat-error>
@@ -52,7 +52,7 @@ import { UserManagementService } from '../../services/user-management.service';
           <mat-form-field appearance="outline" class="full-width">
             <mat-label>Email</mat-label>
             <input matInput type="email" formControlName="email" placeholder="usuario@email.com">
-            <mat-icon matPrefix>email</mat-icon>
+
             <mat-error *ngIf="form.get('email')?.hasError('required')">
               Email é obrigatório
             </mat-error>
@@ -64,7 +64,7 @@ import { UserManagementService } from '../../services/user-management.service';
           <mat-form-field appearance="outline" class="full-width">
             <mat-label>{{ data.user ? 'Nova Senha (deixe em branco para não alterar)' : 'Senha' }}</mat-label>
             <input matInput [type]="hidePassword ? 'password' : 'text'" formControlName="password" [placeholder]="data.user ? 'Digite apenas se quiser alterar' : 'Mínimo 6 caracteres'">
-            <mat-icon matPrefix>lock</mat-icon>
+
             <button mat-icon-button matSuffix (click)="hidePassword = !hidePassword" type="button">
               <mat-icon>{{ hidePassword ? 'visibility_off' : 'visibility' }}</mat-icon>
             </button>
@@ -84,7 +84,7 @@ import { UserManagementService } from '../../services/user-management.service';
               <mat-option value="seller">Vendedor</mat-option>
               <mat-option value="cashier">Caixa</mat-option>
             </mat-select>
-            <mat-icon matPrefix>badge</mat-icon>
+
             <mat-error *ngIf="form.get('role')?.hasError('required')">
               Perfil é obrigatório
             </mat-error>

@@ -25,6 +25,11 @@
         Fechar Caixa
       </button>
       
+      <!-- Botão Buscar Comandas -->
+      <button mat-icon-button (click)="toggleComandaSearch()" matTooltip="Buscar Comandas (F6)" [color]="showComandaSearch ? 'accent' : ''">
+        <mat-icon [matBadge]="availableComandas.length" matBadgeColor="warn" [matBadgeHidden]="availableComandas.length === 0">receipt_long</mat-icon>
+      </button>
+      
       <!-- Botão Histórico -->
       <button mat-icon-button (click)="toggleDailySales()" matTooltip="Histórico do Dia (F5)">
         <mat-icon [matBadge]="getTodaysSalesCount()" matBadgeColor="accent">history</mat-icon>
@@ -51,6 +56,7 @@
     <span class="shortcut"><kbd>F3</kbd> Limpar</span>
     <span class="shortcut"><kbd>F4</kbd> Pagamento</span>
     <span class="shortcut"><kbd>F5</kbd> Histórico</span>
+    <span class="shortcut"><kbd>F6</kbd> Comandas</span>
     <span class="shortcut"><kbd>F8</kbd> Sangria</span>
     <span class="shortcut"><kbd>F9</kbd> Suprimento</span>
   </div>
@@ -62,39 +68,35 @@
         <mat-card-content>
           <mat-form-field class="full-width" appearance="outline">
             <mat-label>Buscar Produto</mat-label>
-            <mat-icon matPrefix>search</mat-icon>
             <input matInput [(ngModel)]="searchProduct" placeholder="Digite o nome ou código">
           </mat-form-field>
         </mat-card-content>
       </mat-card>
 
-      <mat-card class="products-list">
-        <mat-card-header>
-          <mat-card-title>Produtos Disponíveis</mat-card-title>
-        </mat-card-header>
-        <mat-card-content>
-          <div class="product-grid">
-            @for (product of availableProducts; track product.id) {
-              <button 
-                mat-raised-button 
-                class="product-btn"
-                (click)="addProduct(product.id)">
-                <div class="product-image-container">
-                  @if (product.imageUrl) {
-                    <img [src]="product.imageUrl" [alt]="product.name" class="product-image">
-                  } @else {
-                    <div class="product-no-image">
-                      <mat-icon>image</mat-icon>
-                    </div>
-                  }
-                </div>
-                <div class="product-info">
-                  <span class="product-name">{{ product.name }}</span>
-                  <span class="product-price">R$ {{ product.price.toFixed(2) }}</span>
-                  <span class="product-stock">Estoque: {{ product.stock }}</span>
-                </div>
-              </button>
-            }
+      <!-- Logo do Lojista -->
+      <mat-card class="store-logo-card">
+        <mat-card-content class="logo-content">
+          <div class="logo-container">
+            <div class="logo-placeholder">
+              <mat-icon>store</mat-icon>
+              <p>Logo da Loja</p>
+              <span>Adicione sua logo nas configurações</span>
+            </div>
+          </div>
+          
+          <div class="store-info">
+            <h2>VendaMax</h2>
+            <p class="store-tagline">Sistema de Gestão Comercial</p>
+            <div class="store-details">
+              <div class="detail-item">
+                <mat-icon>phone</mat-icon>
+                <span>(11) 98765-4321</span>
+              </div>
+              <div class="detail-item">
+                <mat-icon>location_on</mat-icon>
+                <span>São Paulo, SP</span>
+              </div>
+            </div>
           </div>
         </mat-card-content>
       </mat-card>
@@ -179,7 +181,6 @@
           <!-- Desconto -->
           <mat-form-field class="full-width" appearance="outline">
             <mat-label>Desconto (%)</mat-label>
-            <mat-icon matPrefix>local_offer</mat-icon>
             <input matInput type="number" [(ngModel)]="discount" min="0" max="100">
           </mat-form-field>
 
@@ -304,7 +305,6 @@
         <!-- Forma de Pagamento -->
         <mat-form-field class="full-width" appearance="outline">
           <mat-label>Forma de Pagamento</mat-label>
-          <mat-icon matPrefix>payment</mat-icon>
           <mat-select [(ngModel)]="currentPaymentMethod">
             <mat-option value="money">Dinheiro</mat-option>
             <mat-option value="debit">Cartão de Débito</mat-option>
@@ -324,7 +324,6 @@
         @if (currentPaymentMethod === 'credit') {
           <mat-form-field class="full-width" appearance="outline">
             <mat-label>Parcelas</mat-label>
-            <mat-icon matPrefix>credit_card</mat-icon>
             <mat-select [(ngModel)]="installments">
               <mat-option [value]="1">1x sem juros</mat-option>
               <mat-option [value]="2">2x sem juros</mat-option>
@@ -370,6 +369,91 @@
           <mat-icon>add</mat-icon>
           Adicionar
         </button>
+      </div>
+    </div>
+  </div>
+}
+
+<!-- Modal de Busca de Comandas -->
+@if (showComandaSearch) {
+  <div class="payment-modal-overlay" (click)="toggleComandaSearch()">
+    <div class="payment-modal comanda-modal" (click)="$event.stopPropagation()">
+      <div class="modal-header">
+        <h2>
+          <mat-icon>receipt_long</mat-icon>
+          Buscar Comandas
+        </h2>
+        <button mat-icon-button (click)="toggleComandaSearch()">
+          <mat-icon>close</mat-icon>
+        </button>
+      </div>
+
+      <div class="modal-content">
+        <!-- Busca -->
+        <mat-form-field class="full-width" appearance="outline">
+          <mat-label>Buscar por número, cliente, mesa ou vendedor</mat-label>
+          <input matInput [(ngModel)]="comandaSearch" (ngModelChange)="searchComandas()" placeholder="Digite para buscar...">
+        </mat-form-field>
+
+        <!-- Lista de Comandas -->
+        <div class="comandas-list">
+          @if (filteredComandas.length === 0) {
+            <div class="no-comandas-message">
+              <mat-icon>receipt_long</mat-icon>
+              <p>Nenhuma comanda fechada encontrada</p>
+            </div>
+          }
+
+          @for (comanda of filteredComandas; track comanda.id) {
+            <mat-card class="comanda-item" (click)="loadComandaToCart(comanda)">
+              <div class="comanda-header-item">
+                <div class="comanda-number">
+                  <mat-icon>receipt_long</mat-icon>
+                  <strong>{{ comanda.number }}</strong>
+                </div>
+                <mat-chip color="accent" selected>
+                  R$ {{ comanda.subtotal.toFixed(2) }}
+                </mat-chip>
+              </div>
+
+              <div class="comanda-details">
+                <div class="detail-row">
+                  <mat-icon>person</mat-icon>
+                  <span>Vendedor: <strong>{{ comanda.sellerName }}</strong></span>
+                </div>
+
+                @if (comanda.customerName) {
+                  <div class="detail-row">
+                    <mat-icon>account_circle</mat-icon>
+                    <span>Cliente: <strong>{{ comanda.customerName }}</strong></span>
+                  </div>
+                }
+
+                @if (comanda.table) {
+                  <div class="detail-row">
+                    <mat-icon>table_restaurant</mat-icon>
+                    <span>Mesa: <strong>{{ comanda.table }}</strong></span>
+                  </div>
+                }
+
+                <div class="detail-row">
+                  <mat-icon>shopping_basket</mat-icon>
+                  <span>{{ comanda.items.length }} {{ comanda.items.length === 1 ? 'item' : 'itens' }}</span>
+                </div>
+
+                <div class="detail-row">
+                  <mat-icon>schedule</mat-icon>
+                  <span>{{ comanda.closedAt | date:'dd/MM/yyyy HH:mm' }}</span>
+                </div>
+              </div>
+
+              <div class="comanda-action">
+                <mat-icon>arrow_forward</mat-icon>
+                <span>Clique para carregar</span>
+              </div>
+            </mat-card>
+          }
+        </div>
       </div>
     </div>
   </div>

@@ -13,6 +13,7 @@ import { MatDialogModule, MatDialog } from '@angular/material/dialog';
 import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 import { MatBadgeModule } from '@angular/material/badge';
 import { MatTooltipModule } from '@angular/material/tooltip';
+import { MatChipsModule } from '@angular/material/chips';
 import jsPDF from 'jspdf';
 
 interface CartItem {
@@ -65,7 +66,8 @@ interface DailySale {
     MatDialogModule,
     MatSnackBarModule,
     MatBadgeModule,
-    MatTooltipModule
+    MatTooltipModule,
+    MatChipsModule
   ],
   templateUrl: './pdv.component.html',
   styleUrl: './pdv.component.scss'
@@ -114,6 +116,12 @@ export class PdvComponent implements OnInit {
 
   // Código de barras
   barcodeInput = '';
+
+  // Busca de comandas
+  comandaSearch = '';
+  showComandaSearch = false;
+  availableComandas: any[] = [];
+  filteredComandas: any[] = [];
   
   // Mock de produtos disponíveis
   availableProducts = [
@@ -197,6 +205,83 @@ export class PdvComponent implements OnInit {
   ngOnInit(): void {
     this.loadCashRegister();
     this.loadDailySales();
+    this.loadCartFromStorage();
+    this.loadComandas();
+  }
+
+  loadComandas(): void {
+    const stored = localStorage.getItem('comandas');
+    if (stored) {
+      this.availableComandas = JSON.parse(stored)
+        .filter((c: any) => c.status === 'CLOSED')
+        .map((c: any) => ({
+          ...c,
+          openedAt: new Date(c.openedAt),
+          closedAt: c.closedAt ? new Date(c.closedAt) : undefined
+        }));
+      this.filteredComandas = [...this.availableComandas];
+    }
+  }
+
+  toggleComandaSearch(): void {
+    this.showComandaSearch = !this.showComandaSearch;
+    if (this.showComandaSearch) {
+      this.loadComandas();
+      this.comandaSearch = '';
+    }
+  }
+
+  searchComandas(): void {
+    if (!this.comandaSearch) {
+      this.filteredComandas = [...this.availableComandas];
+      return;
+    }
+
+    const search = this.comandaSearch.toLowerCase();
+    this.filteredComandas = this.availableComandas.filter(c => 
+      c.number.toLowerCase().includes(search) ||
+      c.customerName?.toLowerCase().includes(search) ||
+      c.table?.toLowerCase().includes(search) ||
+      c.sellerName.toLowerCase().includes(search)
+    );
+  }
+
+  loadComandaToCart(comanda: any): void {
+    if (this.cart.length > 0) {
+      if (!confirm('Já existe itens no carrinho. Deseja substituir?')) {
+        return;
+      }
+    }
+
+    // Carregar itens da comanda para o carrinho
+    this.cart = comanda.items.map((item: any) => ({
+      id: item.productId,
+      name: item.productName,
+      price: item.unitPrice,
+      quantity: item.quantity,
+      subtotal: item.subtotal
+    }));
+
+    // Salvar informações da comanda
+    localStorage.setItem('current_comanda_info', JSON.stringify({
+      id: comanda.id,
+      number: comanda.number,
+      sellerName: comanda.sellerName,
+      customerName: comanda.customerName,
+      table: comanda.table
+    }));
+
+    this.showComandaSearch = false;
+    this.showSnackBar(`Comanda ${comanda.number} carregada!`, 'success');
+  }
+
+  loadCartFromStorage(): void {
+    const cartData = localStorage.getItem('pdv_cart');
+    if (cartData) {
+      this.cart = JSON.parse(cartData);
+      // Limpar o carrinho do localStorage após carregar
+      localStorage.removeItem('pdv_cart');
+    }
   }
 
   // Atalhos de teclado
@@ -228,6 +313,12 @@ export class PdvComponent implements OnInit {
     if (event.key === 'F5') {
       event.preventDefault();
       this.toggleDailySales();
+    }
+    
+    // F6 - Buscar comandas
+    if (event.key === 'F6') {
+      event.preventDefault();
+      this.toggleComandaSearch();
     }
     
     // F8 - Sangria
@@ -816,6 +907,9 @@ export class PdvComponent implements OnInit {
     this.cashRegister.currentBalance += this.total;
     this.saveCashRegister();
 
+    // Remover comanda paga da lista
+    this.removeComandaAfterPayment();
+
     console.log('Venda finalizada:', saleData);
     
     // Perguntar se deseja imprimir cupom
@@ -827,5 +921,31 @@ export class PdvComponent implements OnInit {
     
     this.showSnackBar('Venda finalizada com sucesso!');
     this.clearCart();
+  }
+
+  removeComandaAfterPayment(): void {
+    // Verificar se há informações de comanda
+    const comandaInfo = localStorage.getItem('current_comanda_info');
+    if (!comandaInfo) return;
+
+    const comanda = JSON.parse(comandaInfo);
+    
+    // Carregar todas as comandas
+    const comandasStr = localStorage.getItem('comandas');
+    if (!comandasStr) return;
+
+    const comandas = JSON.parse(comandasStr);
+    
+    // Remover a comanda paga
+    const updatedComandas = comandas.filter((c: any) => c.id !== comanda.id);
+    
+    // Salvar comandas atualizadas
+    localStorage.setItem('comandas', JSON.stringify(updatedComandas));
+    
+    // Limpar informações da comanda atual
+    localStorage.removeItem('current_comanda_info');
+    
+    // Atualizar lista de comandas disponíveis
+    this.loadComandas();
   }
 }
