@@ -49,6 +49,20 @@ interface DailySale {
   items: number;
 }
 
+interface CompanyData {
+  name: string;
+  tradeName: string;
+  documentType: 'CPF' | 'CNPJ';
+  document: string;
+  email: string;
+  phone: string;
+  address: string;
+  city: string;
+  state: string;
+  zipCode: string;
+  logo?: string;
+}
+
 @Component({
   selector: 'app-pdv',
   standalone: true,
@@ -122,6 +136,9 @@ export class PdvComponent implements OnInit {
   showComandaSearch = false;
   availableComandas: any[] = [];
   filteredComandas: any[] = [];
+  
+  // Dados da empresa
+  companyData: CompanyData | null = null;
   
   // Mock de produtos disponíveis
   availableProducts = [
@@ -207,6 +224,14 @@ export class PdvComponent implements OnInit {
     this.loadDailySales();
     this.loadCartFromStorage();
     this.loadComandas();
+    this.loadCompanyData();
+  }
+
+  loadCompanyData(): void {
+    const stored = localStorage.getItem('companyData');
+    if (stored) {
+      this.companyData = JSON.parse(stored);
+    }
   }
 
   loadComandas(): void {
