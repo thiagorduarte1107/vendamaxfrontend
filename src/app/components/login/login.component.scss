@@ -59,6 +59,30 @@
 
       mat-form-field {
         width: 100%;
+
+        // Remover outline azul de focus
+        &.mat-focused {
+          .mat-mdc-text-field-wrapper {
+            border-color: hsl(var(--border-strong)) !important;
+            box-shadow: none !important;
+          }
+        }
+
+        .mat-mdc-text-field-wrapper {
+          &:focus,
+          &:focus-within {
+            outline: none !important;
+            box-shadow: none !important;
+          }
+        }
+
+        input {
+          &:focus,
+          &:focus-visible {
+            outline: none !important;
+            box-shadow: none !important;
+          }
+        }
       }
 
       button {
