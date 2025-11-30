@@ -62,11 +62,8 @@ server:
 logging:
   level:
     root: INFO
-    com.vendamax: DEBUG
-    org.hibernate.SQL: DEBUG
-    org.hibernate.type.descriptor.sql.BasicBinder: TRACE
-    org.hibernate.engine.jdbc.spi.SqlExceptionHelper: ERROR
-    org.hibernate.persister.entity: DEBUG
+    com.vendamax: INFO
+    org.hibernate.SQL: WARN
 
 # =====================================================
 # JWT

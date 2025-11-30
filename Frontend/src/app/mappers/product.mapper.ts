@@ -23,6 +23,7 @@ export class ProductMapper {
       },
       cost: dto.costPrice,
       price: dto.price,
+      salePrice: dto.salePrice, // Mapear preço de venda do backend
       stock: dto.stock,
       minStock: dto.minStock,
       imageUrl: dto.imageUrl,

@@ -88,7 +88,7 @@ interface CompanyData {
     MatChipsModule
   ],
   templateUrl: './pdv.component.html',
-  styleUrl: './pdv.component.scss'
+  styleUrls: ['./pdv.component.scss', './pdv-history-panel.scss']
 })
 export class PdvComponent implements OnInit {
   searchProduct = '';
@@ -218,22 +218,25 @@ export class PdvComponent implements OnInit {
         this.availableProducts = products.map(p => ({
           id: parseInt(p.id),
           name: p.name,
-          price: p.price,
+          price: p.salePrice || p.price, // Usar preço de venda
           stock: p.stock,
           imageUrl: 'https://via.placeholder.com/400'
         }));
-        console.log('Produtos carregados do backend:', this.availableProducts.length);
       },
-      error: (err) => console.error('Erro ao carregar produtos:', err)
+      error: (err) => {
+        this.showSnackBar('Erro ao carregar produtos', 'error');
+      }
     });
   }
 
   loadClientsFromService(): void {
     this.clientService.getAll().subscribe({
       next: (clients) => {
-        console.log('Clientes carregados do backend:', clients.length);
+        // Clientes carregados com sucesso
       },
-      error: (err) => console.error('Erro ao carregar clientes:', err)
+      error: (err) => {
+        this.showSnackBar('Erro ao carregar clientes', 'error');
+      }
     });
   }
 
@@ -415,10 +418,36 @@ export class PdvComponent implements OnInit {
 
   // Caixa
   loadCashRegister(): void {
-    const stored = localStorage.getItem('cashRegister');
-    if (stored) {
-      this.cashRegister = JSON.parse(stored);
-    }
+    // Tentar carregar do backend primeiro
+    this.saleService.getOpenCashRegister().subscribe({
+      next: (caixa) => {
+        if (caixa) {
+          this.cashRegister = {
+            isOpen: caixa.status === 'OPEN',
+            openedAt: new Date(caixa.openedAt),
+            openingBalance: caixa.openingBalance,
+            currentBalance: caixa.openingBalance,
+            sales: 0,
+            withdrawals: 0,
+            deposits: 0
+          };
+          localStorage.setItem('current_caixa_id', caixa.id.toString());
+        } else {
+          // Se não houver caixa aberto no backend, carregar do localStorage
+          const stored = localStorage.getItem('cashRegister');
+          if (stored) {
+            this.cashRegister = JSON.parse(stored);
+          }
+        }
+      },
+      error: () => {
+        // Em caso de erro, carregar do localStorage
+        const stored = localStorage.getItem('cashRegister');
+        if (stored) {
+          this.cashRegister = JSON.parse(stored);
+        }
+      }
+    });
   }
 
   saveCashRegister(): void {
@@ -438,17 +467,26 @@ export class PdvComponent implements OnInit {
   }
 
   openCashRegister(openingBalance: number): void {
-    this.cashRegister = {
-      isOpen: true,
-      openedAt: new Date(),
-      openingBalance,
-      currentBalance: openingBalance,
-      sales: 0,
-      withdrawals: 0,
-      deposits: 0
-    };
-    this.saveCashRegister();
-    this.showSnackBar('Caixa aberto com sucesso!');
+    this.saleService.openCashRegister(openingBalance).subscribe({
+      next: (caixa) => {
+        this.cashRegister = {
+          isOpen: true,
+          openedAt: new Date(caixa.openedAt),
+          openingBalance: caixa.openingBalance,
+          currentBalance: caixa.openingBalance,
+          sales: 0,
+          withdrawals: 0,
+          deposits: 0
+        };
+        localStorage.setItem('current_caixa_id', caixa.id.toString());
+        this.saveCashRegister();
+        this.showSnackBar('Caixa aberto com sucesso!');
+      },
+      error: (err: any) => {
+        const errorMsg = err.error?.message || 'Erro ao abrir caixa';
+        this.showSnackBar(errorMsg, 'error');
+      }
+    });
   }
 
   closeCashRegister(): void {
@@ -463,37 +501,97 @@ export class PdvComponent implements OnInit {
       Saldo Final: R$ ${this.cashRegister.currentBalance.toFixed(2)}
     `;
     
+    const caixaId = localStorage.getItem('current_caixa_id');
+    
+    if (!caixaId) {
+      // Se não tem ID do backend, fechar apenas localmente
+      if (confirm(`Caixa local (sem integração backend).\nDeseja fechar?\n${report}`)) {
+        this.cashRegister.isOpen = false;
+        localStorage.removeItem('current_caixa_id');
+        localStorage.removeItem('cashRegister');
+        this.showSnackBar('Caixa local fechado. Abra novamente para integrar com backend.');
+      }
+      return;
+    }
+
     if (confirm(`Deseja fechar o caixa?\n${report}`)) {
-      this.cashRegister.isOpen = false;
-      this.saveCashRegister();
-      this.showSnackBar('Caixa fechado com sucesso!');
+      this.saleService.closeCashRegister(parseInt(caixaId), report).subscribe({
+        next: () => {
+          this.cashRegister.isOpen = false;
+          localStorage.removeItem('current_caixa_id');
+          this.saveCashRegister();
+          this.showSnackBar('Caixa fechado com sucesso!');
+        },
+        error: (err: any) => {
+          const errorMsg = err.error?.message || 'Erro ao fechar caixa';
+          this.showSnackBar(errorMsg, 'error');
+        }
+      });
     }
   }
 
   openWithdrawalDialog(): void {
+    if (!this.cashRegister.isOpen) {
+      this.showSnackBar('Caixa fechado! Abra o caixa primeiro.', 'error');
+      return;
+    }
+
+    const caixaId = localStorage.getItem('current_caixa_id');
+    if (!caixaId) {
+      this.showSnackBar('Erro: ID do caixa não encontrado. Feche e abra o caixa novamente.', 'error');
+      return;
+    }
+
     const amount = prompt('Digite o valor da sangria:');
     if (amount) {
       const value = parseFloat(amount);
       if (value > 0 && value <= this.cashRegister.currentBalance) {
-        this.cashRegister.withdrawals += value;
-        this.cashRegister.currentBalance -= value;
-        this.saveCashRegister();
-        this.showSnackBar(`Sangria de R$ ${value.toFixed(2)} realizada!`);
+        this.saleService.registerWithdrawal(parseInt(caixaId), value).subscribe({
+          next: () => {
+            this.cashRegister.withdrawals += value;
+            this.cashRegister.currentBalance -= value;
+            this.saveCashRegister();
+            this.showSnackBar(`Sangria de R$ ${value.toFixed(2)} realizada!`);
+          },
+          error: (err: any) => {
+            const errorMsg = err.error?.message || 'Erro ao registrar sangria';
+            this.showSnackBar(errorMsg, 'error');
+          }
+        });
       } else {
-        this.showSnackBar('Valor inválido!', 'error');
+        this.showSnackBar('Valor inválido ou maior que o saldo!', 'error');
       }
     }
   }
 
   openDepositDialog(): void {
+    if (!this.cashRegister.isOpen) {
+      this.showSnackBar('Caixa fechado! Abra o caixa primeiro.', 'error');
+      return;
+    }
+
+    const caixaId = localStorage.getItem('current_caixa_id');
+    if (!caixaId) {
+      this.showSnackBar('Erro: ID do caixa não encontrado. Feche e abra o caixa novamente.', 'error');
+      return;
+    }
+
     const amount = prompt('Digite o valor do suprimento:');
     if (amount) {
       const value = parseFloat(amount);
       if (value > 0) {
-        this.cashRegister.deposits += value;
-        this.cashRegister.currentBalance += value;
-        this.saveCashRegister();
-        this.showSnackBar(`Suprimento de R$ ${value.toFixed(2)} realizado!`);
+        this.saleService.registerDeposit(parseInt(caixaId), value).subscribe({
+          next: () => {
+            this.cashRegister.deposits += value;
+            this.cashRegister.currentBalance += value;
+            this.saveCashRegister();
+            this.showSnackBar(`Suprimento de R$ ${value.toFixed(2)} realizado!`);
+          },
+          error: (err: any) => {
+            const errorMsg = err.error?.message || 'Erro ao registrar suprimento';
+            this.showSnackBar(errorMsg, 'error');
+          }
+        });
       } else {
         this.showSnackBar('Valor inválido!', 'error');
       }
@@ -515,6 +613,26 @@ export class PdvComponent implements OnInit {
 
   toggleDailySales(): void {
     this.showDailySales = !this.showDailySales;
+    
+    // Se estiver abrindo o histórico, buscar vendas do backend
+    if (this.showDailySales) {
+      this.saleService.getTodaySales().subscribe({
+        next: (sales) => {
+          // Converter vendas do backend para formato DailySale
+          this.dailySales = sales.map(sale => ({
+            id: parseInt(sale.id),
+            time: new Date(sale.createdAt).toLocaleTimeString('pt-BR'),
+            total: sale.total,
+            paymentMethod: sale.paymentMethod,
+            items: sale.items.length
+          }));
+        },
+        error: (err) => {
+          console.error('Erro ao carregar vendas do dia:', err);
+          this.showSnackBar('Erro ao carregar histórico de vendas', 'error');
+        }
+      });
+    }
   }
 
   getTodaysSalesTotal(): number {
@@ -526,6 +644,29 @@ export class PdvComponent implements OnInit {
   }
 
   exportDailySalesToPDF(): void {
+    // Buscar vendas do backend antes de exportar
+    this.saleService.getTodaySales().subscribe({
+      next: (sales) => {
+        // Converter vendas do backend para formato DailySale
+        this.dailySales = sales.map(sale => ({
+          id: parseInt(sale.id),
+          time: new Date(sale.createdAt).toLocaleTimeString('pt-BR'),
+          total: sale.total,
+          paymentMethod: sale.paymentMethod,
+          items: sale.items.length
+        }));
+        
+        // Gerar PDF
+        this.generatePDF();
+      },
+      error: (err) => {
+        console.error('Erro ao carregar vendas do dia:', err);
+        this.showSnackBar('Erro ao carregar vendas para exportação', 'error');
+      }
+    });
+  }
+
+  private generatePDF(): void {
     const doc = new jsPDF({
       format: 'a4',
       unit: 'mm'
@@ -771,7 +912,11 @@ export class PdvComponent implements OnInit {
       'money': 'Dinheiro',
       'debit': 'Débito',
       'credit': 'Crédito',
-      'pix': 'PIX'
+      'pix': 'PIX',
+      'DINHEIRO': 'Dinheiro',
+      'CARTAO_DEBITO': 'Débito',
+      'CARTAO_CREDITO': 'Crédito',
+      'PIX': 'PIX'
     };
     return labels[method] || method;
   }
@@ -955,20 +1100,11 @@ export class PdvComponent implements OnInit {
       notes: ''
     };
 
-    console.log('Dados da venda a serem enviados:', saleData);
-
     // Enviar venda para o backend usando método específico do PDV
     this.saleService.createFromPdv(saleData).subscribe({
       next: (sale) => {
-        console.log('Venda criada no backend:', sale);
-
-        // Atualizar estoque dos produtos
-        this.cart.forEach(item => {
-          this.productService.updateStock(item.id.toString(), -item.quantity).subscribe({
-            error: (err) => console.error('Erro ao atualizar estoque:', err)
-          });
-        });
-
+        // Backend já atualiza o estoque automaticamente no VendaService
+        
         // Registrar venda no histórico local
         const dailySale: DailySale = {
           id: Date.now(),
@@ -979,7 +1115,7 @@ export class PdvComponent implements OnInit {
         };
         this.saveDailySale(dailySale);
 
-        // Atualizar caixa
+        // Atualizar caixa (valores locais para exibição)
         this.cashRegister.sales += this.total;
         this.cashRegister.currentBalance += this.total;
         this.saveCashRegister();
@@ -998,8 +1134,6 @@ export class PdvComponent implements OnInit {
         this.clearCart();
       },
       error: (err) => {
-        console.error('Erro ao finalizar venda:', err);
-        console.error('Detalhes do erro:', err.error);
         const errorMsg = err.error?.message || err.message || 'Erro desconhecido';
         this.showSnackBar(`Erro ao finalizar venda: ${errorMsg}`, 'error');
       }

@@ -46,9 +46,8 @@ public class MovimentacaoCaixa {
     }
 
     public enum TipoMovimentacao {
-        ENTRADA,
-        SAIDA,
-        SANGRIA,
-        REFORCO
+        SALE,
+        WITHDRAWAL,
+        DEPOSIT
     }
 }

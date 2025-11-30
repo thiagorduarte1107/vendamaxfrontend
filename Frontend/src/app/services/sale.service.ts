@@ -100,4 +100,67 @@ export class SaleService {
       map(response => response.data)
     );
   }
+
+  // ===== MÉTODOS DE CAIXA =====
+  
+  getOpenCashRegister(): Observable<any> {
+    const currentUser = this.authService.getCurrentUser();
+    const userId = currentUser?.id || '1';
+    
+    const headers = new HttpHeaders({
+      'User-Id': userId
+    });
+    
+    const caixaUrl = `${environment.apiUrl}/caixas/aberto`;
+    return this.http.get<ApiResponse<any>>(caixaUrl, { headers }).pipe(
+      map(response => response.data)
+    );
+  }
+
+  openCashRegister(openingBalance: number): Observable<any> {
+    const currentUser = this.authService.getCurrentUser();
+    const userId = currentUser?.id || '1';
+    
+    const headers = new HttpHeaders({
+      'User-Id': userId
+    });
+    
+    const caixaUrl = `${environment.apiUrl}/caixas/abrir`;
+    return this.http.post<ApiResponse<any>>(caixaUrl, null, {
+      headers,
+      params: { saldoInicial: openingBalance.toString() }
+    }).pipe(
+      map(response => response.data)
+    );
+  }
+
+  closeCashRegister(caixaId: number, notes?: string): Observable<any> {
+    const caixaUrl = `${environment.apiUrl}/caixas/${caixaId}/fechar`;
+    const params: any = notes ? { observacoes: notes } : undefined;
+    return this.http.post<ApiResponse<any>>(caixaUrl, null, params ? { params } : {}).pipe(
+      map(response => response.data)
+    );
+  }
+
+  registerWithdrawal(caixaId: number, amount: number, description?: string): Observable<any> {
+    const movementUrl = `${environment.apiUrl}/movimentacoes-caixa/sangria`;
+    const params: any = { caixaId: caixaId.toString(), valor: amount.toString() };
+    if (description) {
+      params.descricao = description;
+    }
+    return this.http.post<ApiResponse<any>>(movementUrl, null, { params }).pipe(
+      map(response => response.data)
+    );
+  }
+
+  registerDeposit(caixaId: number, amount: number, description?: string): Observable<any> {
+    const movementUrl = `${environment.apiUrl}/movimentacoes-caixa/suprimento`;
+    const params: any = { caixaId: caixaId.toString(), valor: amount.toString() };
+    if (description) {
+      params.descricao = description;
+    }
+    return this.http.post<ApiResponse<any>>(movementUrl, null, { params }).pipe(
+      map(response => response.data)
+    );
+  }
 }

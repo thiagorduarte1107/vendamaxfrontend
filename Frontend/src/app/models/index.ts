@@ -46,6 +46,7 @@ export interface Product {
   category?: Category;
   cost: number;
   price: number;
+  salePrice?: number; // Preço de venda (pode ser diferente do preço base)
   stock: number;
   minStock: number;
   imageUrl?: string;

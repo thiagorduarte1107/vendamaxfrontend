@@ -469,3 +469,71 @@
     </div>
   </div>
 }
+
+<!-- Painel de Histórico de Vendas -->
+@if (showDailySales) {
+  <div class="overlay" (click)="toggleDailySales()"></div>
+  <div class="sales-history-panel">
+    <div class="panel-header">
+      <h2>
+        <mat-icon>history</mat-icon>
+        Histórico de Vendas do Dia
+      </h2>
+      <button mat-icon-button (click)="toggleDailySales()">
+        <mat-icon>close</mat-icon>
+      </button>
+    </div>
+
+    <div class="panel-content">
+      @if (dailySales.length === 0) {
+        <div class="empty-history">
+          <mat-icon>receipt_long</mat-icon>
+          <p>Nenhuma venda realizada hoje</p>
+        </div>
+      } @else {
+        <div class="sales-summary">
+          <div class="summary-item">
+            <span class="label">Total de Vendas:</span>
+            <span class="value">{{ getTodaysSalesCount() }}</span>
+          </div>
+          <div class="summary-item highlight">
+            <span class="label">Faturamento Total:</span>
+            <span class="value">R$ {{ getTodaysSalesTotal().toFixed(2) }}</span>
+          </div>
+        </div>
+
+        <div class="sales-list">
+          @for (sale of dailySales; track sale.id) {
+            <mat-card class="sale-card">
+              <div class="sale-header">
+                <span class="sale-number">#{{ sale.id }}</span>
+                <span class="sale-time">{{ sale.time }}</span>
+              </div>
+              <div class="sale-details">
+                <div class="detail-row">
+                  <mat-icon>shopping_cart</mat-icon>
+                  <span>{{ sale.items }} item(ns)</span>
+                </div>
+                <div class="detail-row">
+                  <mat-icon>payment</mat-icon>
+                  <span>{{ getPaymentMethodLabel(sale.paymentMethod) }}</span>
+                </div>
+              </div>
+              <div class="sale-total">
+                <span class="total-label">Total:</span>
+                <span class="total-value">R$ {{ sale.total.toFixed(2) }}</span>
+              </div>
+            </mat-card>
+          }
+        </div>
+      }
+    </div>
+
+    <div class="panel-footer">
+      <button mat-raised-button color="primary" (click)="exportDailySalesToPDF()" [disabled]="dailySales.length === 0">
+        <mat-icon>picture_as_pdf</mat-icon>
+        Exportar PDF
+      </button>
+    </div>
+  </div>
+}

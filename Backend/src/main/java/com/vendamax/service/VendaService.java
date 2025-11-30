@@ -135,16 +135,7 @@ public class VendaService {
             totalAmount = totalAmount.add(itemTotal);
 
             // Atualizar estoque
-            int novoEstoque = produto.getStock() - itemRequest.getQuantity();
-            System.out.println("=== DEBUG ESTOQUE ===");
-            System.out.println("Produto ID: " + produto.getId());
-            System.out.println("Produto Nome: " + produto.getName());
-            System.out.println("Estoque Atual: " + produto.getStock());
-            System.out.println("Quantidade Vendida: " + itemRequest.getQuantity());
-            System.out.println("Novo Estoque: " + novoEstoque);
-            System.out.println("====================");
-            
-            produto.setStock(novoEstoque);
+            produto.setStock(produto.getStock() - itemRequest.getQuantity());
             produtoRepository.save(produto);
         }
 
