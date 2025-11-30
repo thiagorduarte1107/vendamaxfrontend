@@ -1,0 +1,94 @@
+# =====================================================
+# VENDAMAX - CONFIGURAÇÃO SPRING BOOT
+# SQL Server 2022
+# Servidor: DESKTOP-7REEA1N
+# =====================================================
+
+spring:
+  application:
+    name: vendamax-api
+  
+  # =====================================================
+  # DATASOURCE - SQL SERVER
+  # =====================================================
+  datasource:
+    url: jdbc:sqlserver://localhost:1433;databaseName=vendamax;encrypt=false;trustServerCertificate=true
+    username: vendamax_user
+    password: VendaMax2024
+    driver-class-name: com.microsoft.sqlserver.jdbc.SQLServerDriver
+    
+    hikari:
+      pool-name: VendaMaxPool
+      maximum-pool-size: 10
+      minimum-idle: 5
+      connection-timeout: 30000
+  
+  # =====================================================
+  # JPA / HIBERNATE
+  # =====================================================
+  jpa:
+    database-platform: org.hibernate.dialect.SQLServerDialect
+    hibernate:
+      ddl-auto: update
+      naming:
+        physical-strategy: org.hibernate.boot.model.naming.PhysicalNamingStrategyStandardImpl
+    show-sql: true
+    properties:
+      hibernate:
+        format_sql: true
+        use_sql_comments: true
+  
+  # =====================================================
+  # JACKSON / JSON
+  # =====================================================
+  jackson:
+    serialization:
+      write-dates-as-timestamps: false
+      indent-output: true
+    time-zone: America/Sao_Paulo
+    date-format: yyyy-MM-dd'T'HH:mm:ss
+
+# =====================================================
+# SERVER
+# =====================================================
+server:
+  port: 8080
+  servlet:
+    context-path: /api
+
+# =====================================================
+# LOGGING
+# =====================================================
+logging:
+  level:
+    root: INFO
+    com.vendamax: DEBUG
+    org.hibernate.SQL: DEBUG
+    org.hibernate.type.descriptor.sql.BasicBinder: TRACE
+    org.hibernate.engine.jdbc.spi.SqlExceptionHelper: ERROR
+    org.hibernate.persister.entity: DEBUG
+
+# =====================================================
+# JWT
+# =====================================================
+jwt:
+  secret: VendaMaxSecretKey2024MuitoSeguroEComplexo
+  expiration: 86400000 # 24 horas
+
+# =====================================================
+# CORS
+# =====================================================
+cors:
+  allowed-origins: http://localhost:4200
+  allowed-methods: GET,POST,PUT,DELETE,PATCH,OPTIONS
+  allowed-headers: "*"
+  allow-credentials: true
+
+# =====================================================
+# SWAGGER
+# =====================================================
+springdoc:
+  api-docs:
+    path: /v3/api-docs
+  swagger-ui:
+    path: /swagger-ui.html

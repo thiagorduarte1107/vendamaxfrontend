@@ -1,0 +1,27 @@
+# =====================================================
+# VENDAMAX - CONFIGURAÇÃO DE DESENVOLVIMENTO
+# =====================================================
+
+spring:
+  jpa:
+    show-sql: true
+    properties:
+      hibernate:
+        format_sql: true
+        use_sql_comments: true
+
+logging:
+  level:
+    root: INFO
+    com.vendamax: DEBUG
+    org.springframework.web: DEBUG
+    org.springframework.security: DEBUG
+    org.hibernate.SQL: DEBUG
+    org.hibernate.type.descriptor.sql.BasicBinder: TRACE
+
+# Desabilitar cache para desenvolvimento
+  devtools:
+    restart:
+      enabled: true
+    livereload:
+      enabled: true

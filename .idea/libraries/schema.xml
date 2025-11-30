@@ -1,0 +1,10 @@
+<component name="libraryTable">
+  <library name="schema">
+    <CLASSES>
+      <root url="jar://$PROJECT_DIR$/Frontend/.idea/dataSources/b1771e03-e98d-4f57-8ea8-89e0b4e0eb8d/storage_v2/_src_/database/msdb.pEgzAA/schema/smart_admin.WcEq9g.zip!/" />
+      <root url="jar://$PROJECT_DIR$/Frontend/.idea/dataSources/b1771e03-e98d-4f57-8ea8-89e0b4e0eb8d/storage_v2/_src_/database/msdb.pEgzAA/schema/managed_backup.YmLD7g.zip!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES />
+  </library>
+</component>
