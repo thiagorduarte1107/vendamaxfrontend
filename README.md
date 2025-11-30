@@ -1,6 +1,8 @@
-# 🚀 VendaMax - Sistema de Gestão Comercial
+# 🚀 VendaMax - Frontend
 
-Sistema completo de gestão comercial com Angular 17 + Spring Boot 3.2 + SQL Server 2022.
+Interface web do sistema VendaMax desenvolvida em Angular 17.
+
+> **Backend:** https://github.com/thiagorduarte1107/vendasmaxbackend
 
 ---
 
@@ -35,32 +37,21 @@ Sistema completo de gestão comercial com Angular 17 + Spring Boot 3.2 + SQL Ser
 
 ## 🛠️ Tecnologias
 
-### Backend
-- **Java 17**
-- **Spring Boot 3.2.0**
-- **Spring Security** (JWT)
-- **Spring Data JPA** (Hibernate)
-- **SQL Server 2022**
-- **Maven**
-- **Swagger/OpenAPI 3.0**
-
-### Frontend
 - **Angular 17**
 - **TypeScript**
 - **Angular Material**
 - **RxJS**
 - **Chart.js**
 - **jsPDF**
+- **SCSS**
 
 ---
 
 ## ✅ Pré-requisitos
 
-- **Java JDK 17+**
 - **Node.js 18+** e **npm**
-- **SQL Server 2022** (ou SQL Server Express)
-- **Maven 3.8+**
 - **Git**
+- **Backend API** rodando (veja: https://github.com/thiagorduarte1107/vendasmaxbackend)
 
 ---
 
@@ -69,50 +60,37 @@ Sistema completo de gestão comercial com Angular 17 + Spring Boot 3.2 + SQL Ser
 ### 1️⃣ Clonar o Repositório
 
 ```bash
-git clone <url-do-repositorio>
-cd anota-z
+git clone https://github.com/thiagorduarte1107/vendamaxfrontend.git
+cd vendamaxfrontend
 ```
 
-### 2️⃣ Configurar o Banco de Dados
-
-#### Criar o banco de dados:
-
-```bash
-cd database
-sqlcmd -S localhost -U sa -P <sua-senha> -i create-database-sqlserver.sql
-```
-
-#### Configurar credenciais no backend:
-
-Edite o arquivo `Backend/src/main/resources/application.yml`:
-
-```yaml
-spring:
-  datasource:
-    url: jdbc:sqlserver://localhost:1433;databaseName=vendamax;encrypt=false
-    username: vendamax_user
-    password: VendaMax2024
-```
-
-### 3️⃣ Iniciar o Backend
-
-```bash
-cd Backend
-mvnw clean install
-mvnw spring-boot:run
-```
-
-O backend estará disponível em: **http://localhost:8080/api**
-
-### 4️⃣ Iniciar o Frontend
+### 2️⃣ Instalar Dependências
 
 ```bash
 cd Frontend
 npm install
+```
+
+### 3️⃣ Configurar URL do Backend
+
+Edite o arquivo `Frontend/src/environments/environment.ts`:
+
+```typescript
+export const environment = {
+  production: false,
+  apiUrl: 'http://localhost:8080/api'  // URL do backend
+};
+```
+
+### 4️⃣ Iniciar o Frontend
+
+```bash
 npm start
 ```
 
 O frontend estará disponível em: **http://localhost:4200**
+
+> **⚠️ Importante:** Certifique-se de que o backend está rodando antes de iniciar o frontend.
 
 ---
 
@@ -128,45 +106,24 @@ Após iniciar a aplicação, use as seguintes credenciais para fazer login:
 | **Senha** | `password` |
 | **Perfil** | ADMIN (acesso total) |
 
-### 🔧 Criar Novo Usuário Admin
+### 🔧 Criar Novo Usuário
 
-Para criar um novo usuário administrador, execute:
-
-```bash
-cd Backend
-sqlcmd -S localhost -U vendamax_user -P VendaMax2024 -d vendamax -i criar-usuario-teste.sql
-```
+Para criar novos usuários, consulte a documentação do backend:
+https://github.com/thiagorduarte1107/vendasmaxbackend
 
 ---
 
 ## 📁 Estrutura do Projeto
 
 ```
-anota-z/
-├── Backend/                    # API Spring Boot
-│   ├── src/
-│   │   ├── main/
-│   │   │   ├── java/com/vendamax/
-│   │   │   │   ├── config/           # Configurações (Security, CORS, JWT)
-│   │   │   │   ├── controller/       # Endpoints REST (Resources)
-│   │   │   │   ├── dto/              # DTOs (Request/Response)
-│   │   │   │   ├── entity/           # Entidades JPA
-│   │   │   │   ├── exception/        # Tratamento de exceções
-│   │   │   │   ├── repository/       # Repositórios JPA
-│   │   │   │   ├── security/         # Filtros e configurações de segurança
-│   │   │   │   └── service/          # Lógica de negócio
-│   │   │   └── resources/
-│   │   │       └── application.yml   # Configurações da aplicação
-│   │   └── test/                     # Testes unitários
-│   ├── pom.xml                       # Dependências Maven
-│   └── README.md
-│
+vendamaxfrontend/
 ├── Frontend/                   # Aplicação Angular
 │   ├── src/
 │   │   ├── app/
 │   │   │   ├── components/           # Componentes da UI
 │   │   │   ├── guards/               # Guards de rota
 │   │   │   ├── interceptors/         # HTTP Interceptors
+│   │   │   ├── mappers/              # Mapeadores DTO <-> Model
 │   │   │   ├── models/               # Interfaces TypeScript
 │   │   │   ├── pages/                # Páginas principais
 │   │   │   └── services/             # Serviços Angular
@@ -176,12 +133,11 @@ anota-z/
 │   ├── package.json
 │   └── README.md
 │
-├── database/                   # Scripts SQL
+├── database/                   # Scripts SQL (referência)
 │   ├── create-database-sqlserver.sql
-│   └── rename-tables-to-portuguese.sql
+│   └── insert-vendas-hoje.sql
 │
-├── CONECTAR-FRONTEND-BACKEND.md      # Guia de conexão
-└── README.md                         # Este arquivo
+└── README.md                   # Este arquivo
 ```
 
 ---
@@ -238,93 +194,21 @@ anota-z/
 
 ## 📚 Documentação da API
 
-### Swagger UI
-
-Acesse a documentação interativa da API em:
-
-**http://localhost:8080/api/swagger-ui.html**
-
-### Endpoints Principais
-
-#### Autenticação
-```
-POST /api/auth/login          # Login
-GET  /api/auth/validate       # Validar token
-```
-
-#### Produtos
-```
-GET    /api/produtos          # Listar produtos
-POST   /api/produtos          # Criar produto
-GET    /api/produtos/{id}     # Buscar produto
-PUT    /api/produtos/{id}     # Atualizar produto
-DELETE /api/produtos/{id}     # Deletar produto
-```
-
-#### Clientes
-```
-GET    /api/clientes          # Listar clientes
-POST   /api/clientes          # Criar cliente
-GET    /api/clientes/{id}     # Buscar cliente
-PUT    /api/clientes/{id}     # Atualizar cliente
-DELETE /api/clientes/{id}     # Deletar cliente
-```
-
-#### Vendas
-```
-GET    /api/vendas            # Listar vendas
-POST   /api/vendas            # Criar venda
-GET    /api/vendas/{id}       # Buscar venda
-PUT    /api/vendas/{id}       # Atualizar venda
-DELETE /api/vendas/{id}       # Cancelar venda
-```
-
-#### Dashboard
-```
-GET /api/dashboard/metricas   # Métricas gerais
-```
+Para documentação completa da API, consulte o repositório do backend:
+**https://github.com/thiagorduarte1107/vendasmaxbackend**
 
 ---
 
-## 🔒 Segurança
+## 🌐 URLs
 
-- **Autenticação JWT** com tokens de 24 horas
-- **CORS** configurado para desenvolvimento
-- **Senhas criptografadas** com BCrypt
-- **Controle de acesso** por perfil e permissões
-- **Validação de dados** em todas as requisições
-
----
-
-## 🌐 URLs da Aplicação
-
-| Serviço | URL | Descrição |
-|---------|-----|-----------|
-| **Frontend** | http://localhost:4200 | Interface do usuário |
-| **Backend API** | http://localhost:8080/api | API REST |
-| **Swagger UI** | http://localhost:8080/api/swagger-ui.html | Documentação interativa |
+| Serviço | URL |
+|---------|-----|
+| **Frontend** | http://localhost:4200 |
+| **Backend API** | http://localhost:8080/api |
 
 ---
 
 ## 📝 Scripts Úteis
-
-### Backend
-
-```bash
-# Compilar
-mvnw clean install
-
-# Executar
-mvnw spring-boot:run
-
-# Executar testes
-mvnw test
-
-# Criar JAR
-mvnw package
-```
-
-### Frontend
 
 ```bash
 # Instalar dependências
@@ -343,40 +227,28 @@ npm test
 npm run lint
 ```
 
-### Banco de Dados
-
-```bash
-# Criar banco de dados
-sqlcmd -S localhost -U vendamax_user -P VendaMax2024 -i database/create-database-sqlserver.sql
-
-# Criar usuário de teste
-sqlcmd -S localhost -U vendamax_user -P VendaMax2024 -d vendamax -i Backend/criar-usuario-teste.sql
-
-# Limpar tabela de permissões
-sqlcmd -S localhost -U vendamax_user -P VendaMax2024 -d vendamax -i Backend/limpar-permissoes.sql
-```
-
 ---
 
 ## 🐛 Solução de Problemas
 
-### Backend não inicia
-
-1. Verifique se o SQL Server está rodando
-2. Confirme as credenciais no `application.yml`
-3. Verifique se a porta 8080 está livre
-
 ### Frontend não conecta ao backend
 
-1. Verifique se o backend está rodando
-2. Confirme a URL da API em `src/environments/environment.ts`
+1. Verifique se o backend está rodando em `http://localhost:8080/api`
+2. Confirme a URL da API em `Frontend/src/environments/environment.ts`
 3. Verifique o console do navegador para erros de CORS
+4. Certifique-se de que o backend está configurado corretamente
 
 ### Erro de login
 
 1. Use as credenciais corretas: `teste@vendamax.com` / `password`
-2. Verifique se o usuário existe no banco de dados
-3. Confirme que o backend está processando a requisição
+2. Verifique se o backend está processando a requisição
+3. Consulte os logs do backend para mais detalhes
+
+### Problemas de build
+
+1. Limpe o cache: `npm cache clean --force`
+2. Remova `node_modules`: `rm -rf node_modules`
+3. Reinstale: `npm install`
 
 ---
 
