@@ -46,24 +46,17 @@ Sistema completo de gestão comercial com frontend Angular 17 e backend Spring B
 vendamaxfrontend/
 ├── Frontend/              # Código Angular 17
 │   ├── src/              # Código fonte
+│   │   ├── app/         # Componentes e serviços
+│   │   ├── assets/      # Imagens e recursos
+│   │   └── styles/      # Estilos globais
 │   ├── angular.json      # Configuração Angular
-│   └── package.json      # Dependências
+│   ├── package.json      # Dependências
+│   └── README.md         # Documentação do frontend
 │
-├── database/             # Scripts SQL
-│   ├── README.md         # Documentação dos scripts
-│   ├── create-database-sqlserver.sql
-│   ├── insert-test-data.sql
-│   └── ...
-│
-├── Docs/                 # Documentação (local, não commitada)
-│   ├── README.md
-│   ├── BACKEND-PLAN.md
-│   ├── BRAINSTORM.md
-│   └── ...
-│
-├── vercel.json           # Configuração Vercel
 └── README.md             # Este arquivo
 ```
+
+> **Nota:** Scripts SQL, documentação e configurações de deploy ficam **localmente** e não são commitados neste repositório.
 
 ---
 

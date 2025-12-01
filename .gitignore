@@ -1,6 +1,9 @@
 # Documentação local (não commitar)
 Docs/
 
+# Scripts SQL (local, não commitar no frontend)
+database/
+
 # IDEs
 .idea/
 .vscode/
@@ -12,3 +15,6 @@ Thumbs.db
 
 # Backend (repositório separado)
 Backend/
+
+# Vercel (config específica do deploy)
+vercel.json
